@@ -1,0 +1,26 @@
+name: Publish mill to github
+
+on:
+  push:
+    branches: [ main ]
+    tags:
+      - "*"
+
+jobs:
+  publish:
+    runs-on: macos-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+      - name: Setup Java 17
+        uses: actions/setup-java@v3
+        with:
+          distribution: temurin
+          java-version: 17
+      - name: Setup gradle
+        uses: gradle/gradle-build-action@v2
+      - name: Publish libs
+        run: ./gradlew publish
+        env:
+          MILL_REPO_USERNAME: ${{secrets.PUBLISH_USER}}
+          MILL_REPO_PUBLISH_KEY: ${{secrets.PUBLISH_TOKEN}}

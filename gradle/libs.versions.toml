@@ -1,7 +1,11 @@
 [versions]
+
+# Mill
+mill = "0.0.1"
+
 agp = "8.1.2"
 kotlin = "1.9.10"
-kotlinxCoroutines = "1.7.2"
+kotlinxCoroutines = "1.7.3"
 compose = "1.5.3"
 compose-compiler = "1.5.3"
 compose-material3 = "1.1.2"

@@ -1,5 +1,6 @@
 package coder.stanley.mill.core
 
+import android.annotation.SuppressLint
 import androidx.compose.runtime.compositionLocalOf
 import androidx.lifecycle.ViewModelStore
 
@@ -7,6 +8,7 @@ actual class ViewStateStoreSaver(private val viewModelStore: ViewModelStore = Vi
 
     actual constructor(): this(ViewModelStore())
 
+    @SuppressLint("RestrictedApi")
     actual fun <Action, State, Effect> getStore(key: String): ViewStateStore<Action, State, Effect>? {
         val store = viewModelStore[key]
         if (store != null) {
@@ -15,10 +17,12 @@ actual class ViewStateStoreSaver(private val viewModelStore: ViewModelStore = Vi
         return null
     }
 
+    @SuppressLint("RestrictedApi")
     actual fun putStore(key: String, viewStateStore: ViewStateStore<*, *, *>) {
         viewModelStore.put(key, viewStateStore)
     }
 
+    @SuppressLint("RestrictedApi")
     actual fun storeKeys(): Set<String> {
         return viewModelStore.keys()
     }

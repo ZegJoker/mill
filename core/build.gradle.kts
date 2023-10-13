@@ -2,7 +2,10 @@ plugins {
     alias(libs.plugins.kotlinMultiplatform)
     alias(libs.plugins.composeMultiplatform)
     alias(libs.plugins.androidLibrary)
+    id("maven-publish")
 }
+
+version = libs.versions.mill.get()
 
 @OptIn(org.jetbrains.kotlin.gradle.ExperimentalKotlinGradlePluginApi::class)
 kotlin {
@@ -11,7 +14,7 @@ kotlin {
     androidTarget {
         compilations.all {
             kotlinOptions {
-                jvmTarget = "1.8"
+                jvmTarget = JavaVersion.VERSION_17.toString()
             }
         }
     }
@@ -77,5 +80,9 @@ android {
     compileSdk = 34
     defaultConfig {
         minSdk = 30
+    }
+    compileOptions {
+        sourceCompatibility = JavaVersion.VERSION_17
+        targetCompatibility = JavaVersion.VERSION_17
     }
 }
