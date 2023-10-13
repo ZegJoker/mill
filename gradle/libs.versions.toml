@@ -1,0 +1,47 @@
+[versions]
+agp = "8.1.2"
+kotlin = "1.9.10"
+kotlinxCoroutines = "1.7.2"
+compose = "1.5.3"
+compose-compiler = "1.5.3"
+compose-material3 = "1.1.2"
+androidx-activityCompose = "1.8.0"
+material = "1.10.0"
+jetbrainsCompose = "1.5.1"
+
+[libraries]
+kotlin-test = { module = "org.jetbrains.kotlin:kotlin-test", version.ref = "kotlin" }
+androidx-activity-compose = { module = "androidx.activity:activity-compose", version.ref = "androidx-activityCompose" }
+compose-ui = { module = "androidx.compose.ui:ui", version.ref = "compose" }
+compose-ui-tooling = { module = "androidx.compose.ui:ui-tooling", version.ref = "compose" }
+compose-ui-tooling-preview = { module = "androidx.compose.ui:ui-tooling-preview", version.ref = "compose" }
+compose-foundation = { module = "androidx.compose.foundation:foundation", version.ref = "compose" }
+compose-material3 = { module = "androidx.compose.material3:material3", version.ref = "compose-material3" }
+
+# CPP
+cpp-runtime = { group = "org.jetbrains.compose.runtime", name = "runtime", version.ref = "jetbrainsCompose" }
+cpp-runtime-savable = { group = "org.jetbrains.compose.runtime", name = "runtime-saveable", version.ref = "jetbrainsCompose" }
+cpp-ui = { group = "org.jetbrains.compose.ui", name = "ui", version.ref = "jetbrainsCompose" }
+cpp-ui-tooling = { group = "org.jetbrains.compose.ui", name = "ui-tooling", version.ref = "jetbrainsCompose" }
+cpp-ui-tooling-preview = { group = "org.jetbrains.compose.ui", name = "ui-tooling-preview", version.ref = "jetbrainsCompose" }
+cpp-material = { group = "org.jetbrains.compose.material", name = "material", version.ref = "jetbrainsCompose" }
+cpp-material-icon-extended = { group = "org.jetbrains.compose.material", name = "material-icon-extended", version.ref = "jetbrainsCompose" }
+cpp-material3 = { group = "org.jetbrains.compose.material3", name = "material3", version.ref = "jetbrainsCompose" }
+cpp-foundation = { group = "org.jetbrains.compose.foundation", name = "foundation", version.ref = "jetbrainsCompose" }
+cpp-animation = { group = "org.jetbrains.compose.animation", name = "animation", version.ref = "jetbrainsCompose" }
+cpp-animation-graphics = { group = "org.jetbrains.compose.animation", name = "animation-graphics", version.ref = "jetbrainsCompose" }
+cpp-components-resources = { group = "org.jetbrains.compose.components", name = "components-resources", version.ref = "jetbrainsCompose" }
+
+# Kotlin
+kotlin-stdlib = { group = "org.jetbrains.kotlin", name = "kotlin-stdlib-jdk8", version.ref = "kotlin" }
+kotlinx-coroutines-core = { group = "org.jetbrains.kotlinx", name = "kotlinx-coroutines-core", version.ref = "kotlinxCoroutines" }
+
+cpp-gradlePlugin = { group = "org.jetbrains.compose", name = "compose-gradle-plugin", version.ref = "jetbrainsCompose" }
+
+[plugins]
+androidApplication = { id = "com.android.application", version.ref = "agp" }
+androidLibrary = { id = "com.android.library", version.ref = "agp" }
+kotlinAndroid = { id = "org.jetbrains.kotlin.android", version.ref = "kotlin" }
+kotlinMultiplatform = { id = "org.jetbrains.kotlin.multiplatform", version.ref = "kotlin" }
+kotlinCocoapods = { id = "org.jetbrains.kotlin.native.cocoapods", version.ref = "kotlin" }
+composeMultiplatform = { id = "org.jetbrains.compose", version.ref = "jetbrainsCompose" }
