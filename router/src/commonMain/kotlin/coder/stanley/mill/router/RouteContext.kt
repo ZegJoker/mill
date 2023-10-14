@@ -6,6 +6,7 @@ import androidx.compose.animation.ExitTransition
 import androidx.compose.animation.fadeIn
 import androidx.compose.animation.fadeOut
 import androidx.compose.runtime.compositionLocalOf
+import androidx.compose.runtime.saveable.SaveableStateRegistry
 import coder.stanley.mill.core.ViewStateStoreSaver
 
 data class RouteContext(
@@ -21,6 +22,8 @@ data class RouteContext(
     val id = uuid()
 
     val viewModelSaver = ViewStateStoreSaver()
+
+    val saveableStateRegistry = SaveableStateRegistry(emptyMap()) { true }
 
     companion object {
         val INITIAL = RouteContext(path = "", params = emptyMap())
