@@ -13,6 +13,7 @@ import androidx.compose.runtime.CompositionLocalProvider
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.saveable.LocalSaveableStateRegistry
 import androidx.compose.runtime.saveable.rememberSaveableStateHolder
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -68,6 +69,7 @@ fun RouteHost(
                         CompositionLocalProvider(
                             LocalRouteContext.provides(it),
                             LocalViewStateStoreSaver provides state.viewModelSaver,
+                            LocalSaveableStateRegistry provides state.saveableStateRegistry
                         ) {
                             saveableStateHolder.SaveableStateProvider(it.id, route.content)
                         }

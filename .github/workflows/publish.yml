@@ -23,3 +23,8 @@ jobs:
         env:
           MILL_REPO_USERNAME: ${{secrets.PUBLISH_USER}}
           MILL_REPO_PUBLISH_KEY: ${{secrets.PUBLISH_TOKEN}}
+      - name: Create github release
+        uses: ncipollo/release-action@v1
+        with:
+          token: ${{secrets.PUBLISH_TOKEN}}
+          generateReleaseNotes: true
