@@ -6,6 +6,7 @@ actual class ViewStateStoreSaver actual constructor() {
 
     private val map = mutableMapOf<String, ViewStateStore<*, *, *>>()
 
+    @Suppress("UNCHECKED_CAST")
     actual fun <Action, State, Effect> getStore(key: String): ViewStateStore<Action, State, Effect>? {
         val store = map[key]
         if (store != null) {
@@ -23,7 +24,7 @@ actual class ViewStateStoreSaver actual constructor() {
     }
 
     actual fun clearStores() {
-        map.forEach {(_, store) ->
+        map.forEach { (_, store) ->
             store.onClear()
         }
         map.clear()

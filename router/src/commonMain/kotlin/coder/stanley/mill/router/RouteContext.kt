@@ -15,7 +15,7 @@ data class RouteContext(
     val params: Map<String, Any?> = emptyMap(),
     val prevContext: RouteContext? = null,
     val index: Int = 0,
-    val enterSpec : RouteEnterTransition = { fadeIn() },
+    val enterSpec: RouteEnterTransition = { fadeIn() },
     val exitSpec: RouteExitTransition = { fadeOut() }
 ) {
 
