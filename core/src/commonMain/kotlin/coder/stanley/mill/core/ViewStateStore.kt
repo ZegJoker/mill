@@ -18,7 +18,7 @@ expect open class ViewStateStore<Action, State, Effect> {
 @Composable
 expect fun <Action, State, Effect> rememberStore(
     reducer: Reducer<Action, State, Effect>,
-    name: String = reducer::class.qualifiedName ?: "",
+    name: String,
     initialState: () -> State,
 ): ViewStateStore<Action, State, Effect>
 

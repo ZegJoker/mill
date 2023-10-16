@@ -7,7 +7,11 @@ private class ListReducer<Action, State, Effect>(
     override val name: String,
     private val reducers: List<Reducer<Action, State, Effect>>,
 ) : NamedReducer<Action, State, Effect> {
-    override suspend fun reduce(action: Action, currentState: State, onEffect: (Effect) -> Unit): State {
+    override suspend fun reduce(
+        action: Action,
+        currentState: State,
+        onEffect: (Effect) -> Unit
+    ): State {
         var state = currentState
         reducers.forEach {
             state = it.reduce(action, state, onEffect)

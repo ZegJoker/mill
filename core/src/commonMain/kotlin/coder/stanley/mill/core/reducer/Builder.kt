@@ -9,7 +9,11 @@ fun <Action, State, Effect> createReducer(
     return object : NamedReducer<Action, State, Effect> {
         override val name: String = name
 
-        override suspend fun reduce(action: Action, currentState: State, onEffect: (Effect) -> Unit): State {
+        override suspend fun reduce(
+            action: Action,
+            currentState: State,
+            onEffect: (Effect) -> Unit
+        ): State {
             return block(action, currentState, onEffect)
         }
     }

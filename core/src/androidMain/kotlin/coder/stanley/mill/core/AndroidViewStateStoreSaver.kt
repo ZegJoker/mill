@@ -6,9 +6,10 @@ import androidx.lifecycle.ViewModelStore
 
 actual class ViewStateStoreSaver(private val viewModelStore: ViewModelStore = ViewModelStore()) {
 
-    actual constructor(): this(ViewModelStore())
+    actual constructor() : this(ViewModelStore())
 
-    @SuppressLint("RestrictedApi")
+    @SuppressLint("RestrictedApi", "UNCHECKED_CAST")
+    @Suppress("UNCHECKED_CAST")
     actual fun <Action, State, Effect> getStore(key: String): ViewStateStore<Action, State, Effect>? {
         val store = viewModelStore[key]
         if (store != null) {

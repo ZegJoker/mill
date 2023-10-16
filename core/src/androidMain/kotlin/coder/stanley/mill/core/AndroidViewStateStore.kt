@@ -14,7 +14,7 @@ import kotlinx.coroutines.launch
 actual open class ViewStateStore<Action, State, Effect>(
     private val reducer: Reducer<Action, State, Effect>,
     initialState: () -> State
-): ViewModel() {
+) : ViewModel() {
 
     private val _state by lazy { MutableStateFlow(initialState()) }
     actual val state: StateFlow<State> by lazy { _state }
@@ -47,10 +47,10 @@ actual fun <Action, State, Effect> rememberStore(
     initialState: () -> State
 ): ViewStateStore<Action, State, Effect> {
     val storeSaver = LocalViewStateStoreSaver.current
-    val store = storeSaver.getStore<Action, State, Effect>(name)
-    return if (store == null) {
-        remember { ViewStateStore(reducer, initialState).also { storeSaver.putStore(name, it) } }
-    } else {
-        remember { store }
+    return remember {
+        storeSaver.getStore(name) ?: ViewStateStore(
+            reducer,
+            initialState
+        ).also { storeSaver.putStore(name, it) }
     }
 }

@@ -63,16 +63,14 @@ fun RouteHost(
             contentAlignment = contentAlignment,
             contentKey = { it.id }
         ) {
-            if (it.path.isNotBlank()) {
+            CompositionLocalProvider(
+                LocalRouteContext.provides(it),
+                LocalViewStateStoreSaver provides it.viewModelSaver,
+                LocalSaveableStateRegistry provides it.saveableStateRegistry
+            ) {
                 for (route in graph.routes) {
                     if (route.path == it.path) {
-                        CompositionLocalProvider(
-                            LocalRouteContext.provides(it),
-                            LocalViewStateStoreSaver provides state.viewModelSaver,
-                            LocalSaveableStateRegistry provides state.saveableStateRegistry
-                        ) {
-                            saveableStateHolder.SaveableStateProvider(it.id, route.content)
-                        }
+                        saveableStateHolder.SaveableStateProvider(it.id, route.content)
                     }
                 }
             }
