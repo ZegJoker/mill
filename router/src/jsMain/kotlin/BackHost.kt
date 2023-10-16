@@ -4,6 +4,6 @@ import androidx.compose.runtime.Composable
 
 @Composable
 actual fun BackHost(content: @Composable () -> Unit) {
-    // Nothing happened to macos target
+    // Nothing happened to js target
     content()
 }
