@@ -17,6 +17,7 @@ kotlin {
                 jvmTarget = JavaVersion.VERSION_17.toString()
             }
         }
+        publishLibraryVariants("release")
     }
     
     listOf(
@@ -34,6 +35,11 @@ kotlin {
     macosX64()
 
     jvm("desktop")
+
+    js(IR) {
+        moduleName = "mill-router"
+        browser()
+    }
 
     sourceSets {
         val commonMain by getting {
@@ -56,6 +62,13 @@ kotlin {
                 implementation(libs.androidx.activity.compose)
             }
         }
+
+        val jsMain by getting {
+            dependencies {
+                implementation(npm("uuid", libs.versions.npm.uuid.get()))
+            }
+        }
+
     }
 }
 
@@ -68,5 +81,10 @@ android {
     compileOptions {
         sourceCompatibility = JavaVersion.VERSION_17
         targetCompatibility = JavaVersion.VERSION_17
+    }
+    publishing {
+        singleVariant("release") {
+            withSourcesJar()
+        }
     }
 }

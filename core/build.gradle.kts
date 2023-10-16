@@ -17,6 +17,7 @@ kotlin {
                 jvmTarget = JavaVersion.VERSION_17.toString()
             }
         }
+        publishLibraryVariants("release")
     }
 
     listOf(
@@ -34,6 +35,11 @@ kotlin {
     macosX64()
 
     jvm("desktop")
+
+    js(IR) {
+        moduleName = "mill-core"
+        browser()
+    }
 
     sourceSets {
         val commonMain by getting {
@@ -84,5 +90,10 @@ android {
     compileOptions {
         sourceCompatibility = JavaVersion.VERSION_17
         targetCompatibility = JavaVersion.VERSION_17
+    }
+    publishing {
+        singleVariant("release") {
+            withSourcesJar()
+        }
     }
 }
