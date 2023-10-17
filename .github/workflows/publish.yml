@@ -21,8 +21,10 @@ jobs:
       - name: Publish libs
         run: ./gradlew publish
         env:
-          MILL_REPO_USERNAME: ${{secrets.PUBLISH_USER}}
-          MILL_REPO_PUBLISH_KEY: ${{secrets.PUBLISH_TOKEN}}
+          SIGNING_KEY: ${{ secrets.SIGNING_KEY }}
+          SIGNING_PASSWORD: ${{ secrets.SIGNING_PASSWORD }}
+          OSSRH_USER: ${{ secrets.OSSRH_USER }}
+          OSSRH_PASSWORD: ${{ OSSRH_PASSWORD }}
       - name: Create github release
         uses: ncipollo/release-action@v1
         with:

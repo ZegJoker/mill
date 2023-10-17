@@ -16,5 +16,5 @@ dependencyResolutionManagement {
 }
 
 rootProject.name = "mill"
-include(":core")
-include(":router")
+include(":mill-core")
+include(":mill-router")

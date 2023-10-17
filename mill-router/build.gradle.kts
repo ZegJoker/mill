@@ -2,10 +2,10 @@ plugins {
     alias(libs.plugins.kotlinMultiplatform)
     alias(libs.plugins.composeMultiplatform)
     alias(libs.plugins.androidLibrary)
-    id("maven-publish")
 }
 
 version = libs.versions.mill.get()
+description = "A mill's built-in navigation component"
 
 @OptIn(org.jetbrains.kotlin.gradle.ExperimentalKotlinGradlePluginApi::class)
 kotlin {
@@ -46,10 +46,7 @@ kotlin {
             dependencies {
                 implementation(compose.runtime)
                 implementation(compose.foundation)
-                implementation(compose.material3)
-                @OptIn(org.jetbrains.compose.ExperimentalComposeLibrary::class)
-                implementation(compose.components.resources)
-                implementation(project(":core"))
+                implementation(project(":mill-core"))
             }
         }
         val commonTest by getting {
@@ -68,7 +65,6 @@ kotlin {
                 implementation(npm("uuid", libs.versions.npm.uuid.get()))
             }
         }
-
     }
 }
 
