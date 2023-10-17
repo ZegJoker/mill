@@ -1,25 +1,12 @@
 # Mill
 
 [![Build](https://github.com/ZegJoker/mill/actions/workflows/ci.yml/badge.svg)](https://github.com/ZegJoker/mill/actions/workflows/ci.yml)
+[![Maven Central](https://img.shields.io/maven-central/v/io.github.zegjoker/mill-core)](https://search.maven.org/artifact/io.github.zegjoker/mill-core)
 [![GitHub license](https://img.shields.io/badge/license-Apache%20License%202.0-blue.svg?style=flat)](https://www.apache.org/licenses/LICENSE-2.0)
 
-Mill is an tool for compose multiplatform developers to easily manage the UI states.
+Mill is a tool for compose multiplatform developers to easily manage the UI states.
 
 ## Setup
-### Repository
-First, you'll need to add the github repository to your project's `repositories` block, this block usually in the `settings.gradle.kts` under `dependencyResolutionManagement`
-```kotlin
-repositories {
-    maven {
-        url = URI("https://maven.pkg.github.com/ZegJoker/mill")
-        credentials {
-            username = "YOUR_GITHUB_USER_NAME"
-            password = "YOUR_GITHUB_PAT"
-        }
-    }
-}
-```
-Note: if you don't have a github PAT(personal access token), please generate one from [here](https://github.com/settings/tokens/new)
 
 ### Adding Dependency
 Before using **mill**, adding the dependency is needed
@@ -28,8 +15,8 @@ kotlin {
     sourceSets {
         val commonMain by getting {
             dependencies {
-                implementation("coder.stanley.mill:core:$version")
-                implementation("coder.stanley.mill:router:$version")
+                implementation("io.github.zegjoker:mill-core:$version")
+                implementation("io.github.zegjoker:mill-router:$version")
             }
         }
     }
@@ -41,7 +28,7 @@ kotlin {
     sourceSets {
         val commonMain by getting {
             dependencies {
-                implementation("coder.stanley.mill:core:$version")
+                implementation("io.github.zegjoker:mill-core:$version")
             }
         }
     }

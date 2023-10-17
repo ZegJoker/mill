@@ -30,6 +30,30 @@ data class RouteContext(
     }
 }
 
+fun RouteContext.getIntParam(key: String): Int? {
+    return params[key]?.toString()?.toIntOrNull()
+}
+
+fun RouteContext.getStringParam(key: String): String? {
+    return params[key]?.toString()
+}
+
+fun RouteContext.getLongParam(key: String): Long? {
+    return params[key]?.toString()?.toLongOrNull()
+}
+
+fun RouteContext.getBooleanParam(key: String): Boolean? {
+    return params[key]?.toString()?.toBooleanStrictOrNull()
+}
+
+fun RouteContext.getFloatParam(key: String): Float? {
+    return params[key]?.toString()?.toFloatOrNull()
+}
+
+fun RouteContext.getDoubleParam(key: String): Double? {
+    return params[key]?.toString()?.toDoubleOrNull()
+}
+
 val LocalRouteContext = compositionLocalOf { RouteContext.INITIAL }
 
 typealias RouteEnterTransition = AnimatedContentTransitionScope<RouteContext>.() -> EnterTransition
