@@ -1,12 +1,15 @@
 plugins {
     //trick: for the same plugin versions in all sub-modules
     alias(libs.plugins.androidLibrary).apply(false)
+    alias(libs.plugins.androidApplication).apply(false)
+    alias(libs.plugins.kotlinAndroid).apply(false)
     alias(libs.plugins.kotlinMultiplatform).apply(false)
     alias(libs.plugins.composeMultiplatform).apply(false)
 }
 
 subprojects {
     group = "io.github.zegjoker"
+    if (projectDir.canonicalPath.contains("sample")) return@subprojects
     val project = this
     apply<MavenPublishPlugin>()
     apply<SigningPlugin>()

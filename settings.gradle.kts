@@ -18,3 +18,7 @@ dependencyResolutionManagement {
 rootProject.name = "mill"
 include(":mill-core")
 include(":mill-router")
+
+// Sample
+include(":sample:shared")
+include(":sample:androidApp")

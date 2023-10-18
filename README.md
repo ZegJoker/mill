@@ -131,7 +131,7 @@ RouteHost(
             RouteParam("param", type = RouteParamType.Int)
         )
     ) {
-        val param = LocalRouteContext.current.params["data"]?.toString()?.toInt() ?: 0
+        val param = LocalRouteContext.current.getIntParam("param") ?: 0
         SecondScreen(param = param, onBack = {
             controller.navigateUp()
         })
