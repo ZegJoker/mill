@@ -55,8 +55,14 @@ fun RouteHost(
                 if (initialState.prevContext == null && targetState.prevContext == null) {
                     EnterTransition.None togetherWith ExitTransition.None
                 } else {
-                    targetState.enterSpec(this).togetherWith(initialState.exitSpec(this)).also {
-                        it.targetContentZIndex = targetState.index.toFloat()
+                    if (targetState.index < initialState.index) {
+                        EnterTransition.None.togetherWith(initialState.exitSpec(this)).also {
+                            it.targetContentZIndex = targetState.index.toFloat()
+                        }
+                    } else {
+                        targetState.enterSpec(this).togetherWith(ExitTransition.None).also {
+                            it.targetContentZIndex = targetState.index.toFloat()
+                        }
                     }
                 }
             },

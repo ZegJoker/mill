@@ -48,8 +48,9 @@ class RouteReducer : NamedReducer<RouteAction, RouteContext, Unit> {
         val matchResult = pattern.toRegex().matchEntire(given) ?: return null
         val mappedParam = mutableMapOf<String, Any?>()
         if (matchResult.groupValues.size - 1 != params.size) return null
-        for ((index, param) in params.withIndex()) {
-            mappedParam[param.name] = matchResult.groupValues[index + 1].toRouteParam(param.type)
+        for (param in params) {
+            mappedParam[param.name] =
+                matchResult.groupValues[sortedParams.indexOf(param) + 1].toRouteParam(param.type)
         }
         return RouteContext(
             path = path,

@@ -2,7 +2,10 @@ package coder.stanley.mill.router
 
 import androidx.compose.animation.fadeIn
 import androidx.compose.animation.fadeOut
+import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.runtime.Composable
+import androidx.compose.ui.Modifier
 
 enum class RouteParamType {
     String,
@@ -38,6 +41,22 @@ class Route(
     val content: @Composable () -> Unit,
 ) {
 
+    val sortedParams : List<RouteParam>
+        get() {
+            val paramInPath = mutableMapOf<Int, RouteParam>()
+            for (param in params) {
+                val index = path.indexOf("{${param.name}}")
+                paramInPath[index] = param
+            }
+            return buildList {
+                for (key in paramInPath.keys.sorted()) {
+                    paramInPath[key]?.let {
+                        add(it)
+                    }
+                }
+            }
+        }
+
     val pattern: String
         get() {
             var pattern = path
@@ -53,9 +72,7 @@ class Route(
 
         other as Route
 
-        if (path != other.path) return false
-
-        return true
+        return path == other.path
     }
 
     override fun hashCode(): Int {
@@ -105,7 +122,11 @@ fun RouteGraph.Builder.route(
         Route(
             path = path,
             params = params,
-            content = content,
+            content = {
+              Box(modifier = Modifier.fillMaxSize()) {
+                  content()
+              }
+            },
             enterTransitionSpec = enterTransitionSpec ?: enterAnim,
             exitTransitionSpec = exitTransitionSpec ?: exitAnim
         )

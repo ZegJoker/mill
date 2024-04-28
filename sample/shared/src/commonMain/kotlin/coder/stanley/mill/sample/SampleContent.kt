@@ -8,6 +8,7 @@ import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.height
 import androidx.compose.material3.Button
+import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
@@ -56,62 +57,42 @@ fun SampleContent(modifier: Modifier = Modifier) {
                 RouteParam("data", type = RouteParamType.Int)
             )
         ) {
-            SecondPage()
+            SecondPage{
+                controller.navigateTo("third/$it")
+            }
+        }
+
+        route(
+            path = "third/{data}",
+            params = listOf(
+                RouteParam("data", type = RouteParamType.Int)
+            )
+        ) {
+            ThirdPage()
         }
     }
 }
 
 @Composable
-fun FirstPage(modifier: Modifier = Modifier, navToSecond: (Int) -> Unit) {
-    val counterReducer: NamedReducer<Unit, Int, Unit> = remember {
-        createReducer("counter-reducer") { _, currentState, _ ->
-            currentState + 1
-        }
-    }
-
-    val currentRoute = LocalRouteContext.current
-
-    val store = rememberStore(
-        counterReducer,
-        name = "store: ${currentRoute.id}"
-    ) { 0 }
-
-    val state by store.state.collectAsState()
-
-    Column(
-        modifier = modifier.fillMaxSize(),
-        horizontalAlignment = Alignment.CenterHorizontally,
-        verticalArrangement = Arrangement.Center
-    ) {
-        Text("Count: $state")
-        Spacer(modifier = Modifier.height(8.dp))
-        Button(onClick = {
-            store.dispatch(Unit)
-        }) {
-            Text("  + 1  ")
-        }
-        Spacer(modifier = Modifier.height(8.dp))
-        Button(onClick = {
-            navToSecond(state)
-        }) {
-            Text("To 2nd")
-        }
-    }
+fun Title(text: String) {
+    Text(text, style = MaterialTheme.typography.titleMedium)
 }
 
 @Composable
-fun SecondPage(
-    modifier: Modifier = Modifier
+fun GeneralPage(
+    modifier: Modifier,
+    pageName: String,
+    nextPageName: String? = null,
+    onNavToNextPage: ((Int) -> Unit)? = null
 ) {
-    val currentRoute = LocalRouteContext.current
-
-    val param = currentRoute.getIntParam("data") ?: 0
-
     val counterReducer: NamedReducer<Unit, Int, Unit> = remember {
-        createReducer("counter-reducer") { _, currentState, _ ->
+        createReducer("counter-reducer-$pageName") { _, currentState, _ ->
             currentState + 1
         }
     }
+
+    val currentRoute = LocalRouteContext.current
+    val param = currentRoute.getIntParam("data") ?: 0
 
     val store = rememberStore(
         counterReducer,
@@ -121,18 +102,48 @@ fun SecondPage(
     val state by store.state.collectAsState()
 
     Column(
-        modifier = modifier.fillMaxSize().background(Color.Cyan),
+        modifier = modifier.fillMaxSize(),
         horizontalAlignment = Alignment.CenterHorizontally,
         verticalArrangement = Arrangement.Center
     ) {
-        Text("Greeting from second, count: $state")
+        Title("$pageName Page")
+
+        Text("Count: $state")
         Spacer(modifier = Modifier.height(8.dp))
         Button(onClick = {
             store.dispatch(Unit)
         }) {
             Text("  + 1  ")
         }
+        Spacer(modifier = Modifier.height(8.dp))
+        if (nextPageName != null && onNavToNextPage != null) {
+            Button(onClick = {
+                onNavToNextPage(state)
+            }) {
+                Text("To $nextPageName")
+            }
+        }
     }
+}
+
+@Composable
+fun FirstPage(modifier: Modifier = Modifier, navToSecond: (Int) -> Unit) {
+    GeneralPage(modifier, pageName = "1st", nextPageName = "2nd", onNavToNextPage = navToSecond)
+}
+
+@Composable
+fun SecondPage(
+    modifier: Modifier = Modifier,
+    onNavTo3rd: ((Int) -> Unit)?
+) {
+    GeneralPage(modifier, pageName = "2nd", nextPageName = "3rd", onNavToNextPage = onNavTo3rd)
+}
+
+@Composable
+fun ThirdPage(
+    modifier: Modifier = Modifier,
+) {
+    GeneralPage(modifier, pageName = "3rd")
 }
 
 

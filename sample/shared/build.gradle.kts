@@ -50,25 +50,19 @@ kotlin {
             }
         }
     }
-    configurations.all {
-        resolutionStrategy {
-            // issue: https://github.com/JetBrains/compose-multiplatform/issues/3428
-            force(libs.kotlinx.atomicfu.get())
-        }
-    }
 }
 
 android {
     namespace = "coder.stanley.mill.sample"
     compileSdk = 34
     defaultConfig {
-        minSdk = 30
+        minSdk = 23
     }
     buildFeatures {
         compose = true
     }
     composeOptions {
-        kotlinCompilerExtensionVersion = libs.versions.compose.compiler.get().toString()
+        kotlinCompilerExtensionVersion = libs.versions.androidx.compose.compiler.get().toString()
     }
     compileOptions {
         sourceCompatibility = JavaVersion.VERSION_17

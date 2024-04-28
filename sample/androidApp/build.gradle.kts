@@ -11,7 +11,7 @@ android {
     compileSdk = 34
 
     defaultConfig {
-        minSdk = 30
+        minSdk = 23
         targetSdk = 34
         applicationId = "coder.stanley.mill.sample.android"
         versionCode = 1
@@ -29,7 +29,7 @@ android {
     }
 
     composeOptions {
-        kotlinCompilerExtensionVersion = libs.versions.compose.compiler.get().toString()
+        kotlinCompilerExtensionVersion = libs.versions.androidx.compose.compiler.get().toString()
     }
 }
 
