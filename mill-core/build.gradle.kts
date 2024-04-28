@@ -9,7 +9,7 @@ description = "A tool for managing UI states in compose multiplatform "
 
 @OptIn(org.jetbrains.kotlin.gradle.ExperimentalKotlinGradlePluginApi::class)
 kotlin {
-    targetHierarchy.default()
+    applyDefaultHierarchyTemplate()
 
     androidTarget {
         compilations.all {
@@ -82,7 +82,7 @@ android {
     namespace = "coder.stanley.mill.core"
     compileSdk = 34
     defaultConfig {
-        minSdk = 30
+        minSdk = 23
     }
     compileOptions {
         sourceCompatibility = JavaVersion.VERSION_17

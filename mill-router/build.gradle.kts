@@ -9,7 +9,7 @@ description = "A mill's built-in navigation component"
 
 @OptIn(org.jetbrains.kotlin.gradle.ExperimentalKotlinGradlePluginApi::class)
 kotlin {
-    targetHierarchy.default()
+    applyDefaultHierarchyTemplate()
 
     androidTarget {
         compilations.all {
@@ -72,7 +72,7 @@ android {
     namespace = "coder.stanley.mill.router"
     compileSdk = 34
     defaultConfig {
-        minSdk = 30
+        minSdk = 23
     }
     compileOptions {
         sourceCompatibility = JavaVersion.VERSION_17
