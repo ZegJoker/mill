@@ -4,7 +4,7 @@ import androidx.compose.runtime.Composable
 import coder.stanley.mill.core.ViewStateStore
 import coder.stanley.mill.core.rememberStore
 
-typealias RouteController = ViewStateStore<RouteAction, RouteContext, Unit>
+typealias RouteController = ViewStateStore<RouteAction, RouteState, Unit>
 
 fun RouteController.navigateUp() = dispatch(RouteAction.Back)
 
@@ -25,11 +25,10 @@ fun RouteController.navigateTo(
 fun RouteController.popUpTo(path: String) = dispatch(RouteAction.PopUpTo(path = path))
 
 @Composable
-fun rememberRouteController(): RouteController {
+fun rememberRouteController(name: String = "mill-router"): RouteController {
     return rememberStore(
-        reducer = RouteReducer(),
-        initialState = {
-            RouteContext.INITIAL
-        }
+        feature = RouteFeature(),
+        name = name,
+        initialState = { RouteState() }
     )
 }

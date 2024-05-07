@@ -1,28 +1,31 @@
 package coder.stanley.mill.core.reducer
 
-import coder.stanley.mill.core.NamedReducer
+import coder.stanley.mill.core.Effect
 import coder.stanley.mill.core.Reducer
 
-private class ListReducer<Action, State, Effect>(
-    override val name: String,
-    private val reducers: List<Reducer<Action, State, Effect>>,
-) : NamedReducer<Action, State, Effect> {
-    override suspend fun reduce(
+internal class ListReducer<Action, State, Event>(
+    private val reducers: List<Reducer<Action, State, Event>>,
+) : Reducer<Action, State, Event> {
+    override fun reduce(
         action: Action,
-        currentState: State,
-        onEffect: (Effect) -> Unit
-    ): State {
-        var state = currentState
-        reducers.forEach {
-            state = it.reduce(action, state, onEffect)
-        }
-        return state
+        set: ((current: State) -> State) -> Unit,
+        get: () -> State
+    ): Effect<Action, Event> {
+        val effects = reducers.map {
+            it.reduce(action, set, get)
+        }.filter { it !is Effect.None }
+        return Effect.ListEffect(effects)
     }
 }
 
-fun <Action, State, Effect> combineReducers(
-    name: String,
-    vararg reducers: Reducer<Action, State, Effect>
-): NamedReducer<Action, State, Effect> {
-    return ListReducer(name = name, reducers = reducers.toList())
+fun <Action, State, Event> combineReducers(
+    vararg reducers: Reducer<Action, State, Event>
+): Reducer<Action, State, Event> {
+    return combineReducers(reducers.toList())
+}
+
+fun <Action, State, Event> combineReducers(
+    reducers: List<Reducer<Action, State, Event>>
+): Reducer<Action, State, Event> {
+    return ListReducer(reducers = reducers)
 }

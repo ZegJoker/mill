@@ -1,7 +1,6 @@
 package coder.stanley.mill.sample
 
 import androidx.compose.animation.AnimatedContentTransitionScope
-import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Spacer
@@ -16,10 +15,9 @@ import androidx.compose.runtime.getValue
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.unit.dp
-import coder.stanley.mill.core.NamedReducer
-import coder.stanley.mill.core.reducer.createReducer
+import coder.stanley.mill.core.Effect
+import coder.stanley.mill.core.Feature
 import coder.stanley.mill.core.rememberStore
 import coder.stanley.mill.router.LocalRouteContext
 import coder.stanley.mill.router.RouteHost
@@ -78,6 +76,15 @@ fun Title(text: String) {
     Text(text, style = MaterialTheme.typography.titleMedium)
 }
 
+class CounterFeature: Feature<Unit, Int, Unit>() {
+    override fun FeatureBuilder<Unit, Int, Unit>.buildFeature() {
+        Reducer { _, set, _ ->
+            set { it + 1 }
+            Effect.none()
+        }
+    }
+}
+
 @Composable
 fun GeneralPage(
     modifier: Modifier,
@@ -85,18 +92,16 @@ fun GeneralPage(
     nextPageName: String? = null,
     onNavToNextPage: ((Int) -> Unit)? = null
 ) {
-    val counterReducer: NamedReducer<Unit, Int, Unit> = remember {
-        createReducer("counter-reducer-$pageName") { _, currentState, _ ->
-            currentState + 1
-        }
+    val counterFeature = remember {
+        CounterFeature()
     }
 
     val currentRoute = LocalRouteContext.current
     val param = currentRoute.getIntParam("data") ?: 0
 
     val store = rememberStore(
-        counterReducer,
-        name = "store: ${currentRoute.id}"
+        name = "store: ${currentRoute.id}",
+        counterFeature
     ) { param }
 
     val state by store.state.collectAsState()

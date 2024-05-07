@@ -1,10 +1,10 @@
 package coder.stanley.mill.core
 
-interface Reducer<Action, State, Effect> {
+interface Reducer<Action, State, Event> {
 
-    suspend fun reduce(action: Action, currentState: State, onEffect: (Effect) -> Unit): State
-}
-
-interface NamedReducer<Action, State, Effect> : Reducer<Action, State, Effect> {
-    val name: String
+    fun reduce(
+        action: Action,
+        set: ((current: State) -> State) -> Unit,
+        get: () -> State
+    ): Effect<Action, Event>
 }

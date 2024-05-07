@@ -43,11 +43,11 @@ fun RouteHost(
     val saveableStateHolder = rememberSaveableStateHolder()
 
     BackHost {
-        BackHandler(isEnabled = state.prevContext != null) {
+        BackHandler(isEnabled = state.currentRoute.prevContext != null) {
             controller.navigateUp()
         }
 
-        val transition = updateTransition(state, label = "route")
+        val transition = updateTransition(state.currentRoute, label = "route")
 
         transition.AnimatedContent(
             modifier = modifier,

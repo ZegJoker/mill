@@ -1,14 +1,17 @@
 package coder.stanley.mill.core
 
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.rememberUpdatedState
 import kotlinx.coroutines.flow.SharedFlow
 import kotlinx.coroutines.flow.StateFlow
 
-expect open class ViewStateStore<Action, State, Effect> {
+expect open class ViewStateStore<Action, State, Event> {
 
     val state: StateFlow<State>
 
-    val effect: SharedFlow<Effect>
+    val event: SharedFlow<Event>
 
     fun dispatch(action: Action)
 
@@ -16,15 +19,19 @@ expect open class ViewStateStore<Action, State, Effect> {
 }
 
 @Composable
-expect fun <Action, State, Effect> rememberStore(
-    reducer: Reducer<Action, State, Effect>,
+expect fun <Action, State, Event> rememberStore(
     name: String,
+    feature: Feature<Action, State, Event>,
     initialState: () -> State,
-): ViewStateStore<Action, State, Effect>
+): ViewStateStore<Action, State, Event>
 
 @Composable
-fun <Action, State, Effect> rememberStore(
-    reducer: NamedReducer<Action, State, Effect>,
-    initialState: () -> State,
-): ViewStateStore<Action, State, Effect> =
-    rememberStore(reducer = reducer, name = reducer.name, initialState = initialState)
+fun <Action, State, Event> ViewStateStore<Action, State, Event>.onEvent(block: (Event) -> Unit) {
+    val callback by rememberUpdatedState(block)
+
+    LaunchedEffect(Unit) {
+        event.collect {
+            callback(it)
+        }
+    }
+}

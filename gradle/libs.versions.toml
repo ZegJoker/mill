@@ -1,7 +1,7 @@
 [versions]
 
 # Mill
-mill = "0.0.5"
+mill = "0.1.0"
 
 agp = "8.2.2"
 kotlin = "1.9.23"
