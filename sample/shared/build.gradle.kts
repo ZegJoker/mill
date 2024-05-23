@@ -6,6 +6,7 @@ import org.jetbrains.kotlin.gradle.tasks.KotlinCompile
 plugins {
     alias(libs.plugins.kotlinMultiplatform)
     alias(libs.plugins.composeMultiplatform)
+    alias(libs.plugins.compose.compiler)
     alias(libs.plugins.androidLibrary)
 }
 
@@ -60,9 +61,6 @@ android {
     }
     buildFeatures {
         compose = true
-    }
-    composeOptions {
-        kotlinCompilerExtensionVersion = libs.versions.androidx.compose.compiler.get().toString()
     }
     compileOptions {
         sourceCompatibility = JavaVersion.VERSION_17
