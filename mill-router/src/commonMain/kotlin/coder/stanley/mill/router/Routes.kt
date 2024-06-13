@@ -6,6 +6,7 @@ import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
+import kotlin.reflect.KClass
 
 enum class RouteParamType {
     String,
@@ -33,14 +34,19 @@ data class RouteParam(
     val type: RouteParamType,
 )
 
-class Route(
-    val path: String,
-    val params: List<RouteParam>,
+sealed class Route(
     val enterTransitionSpec: RouteEnterTransition = { fadeIn() },
     val exitTransitionSpec: RouteExitTransition = { fadeOut() },
     val content: @Composable () -> Unit,
-) {
+)
 
+class PathRoute(
+    val path: String,
+    val params: List<RouteParam>,
+    enterTransitionSpec: RouteEnterTransition = { fadeIn() },
+    exitTransitionSpec: RouteExitTransition = { fadeOut() },
+    content: @Composable () -> Unit,
+): Route(enterTransitionSpec, exitTransitionSpec, content) {
     val sortedParams : List<RouteParam>
         get() {
             val paramInPath = mutableMapOf<Int, RouteParam>()
@@ -70,13 +76,32 @@ class Route(
         if (this === other) return true
         if (other == null || this::class != other::class) return false
 
-        other as Route
+        other as PathRoute
 
         return path == other.path
     }
 
     override fun hashCode(): Int {
         return path.hashCode()
+    }
+}
+
+class TypedRoute(
+    val targetClass: KClass<*>,
+    enterTransitionSpec: RouteEnterTransition = { fadeIn() },
+    exitTransitionSpec: RouteExitTransition = { fadeOut() },
+    content: @Composable () -> Unit,
+): Route(enterTransitionSpec, exitTransitionSpec, content) {
+    override fun equals(other: Any?): Boolean {
+        if (this === other) return true
+        if (other == null || this::class != other::class) return false
+
+        other as TypedRoute
+        return targetClass == other.targetClass
+    }
+
+    override fun hashCode(): Int {
+        return targetClass.hashCode()
     }
 }
 
@@ -111,24 +136,49 @@ data class RouteGraph(
     }
 }
 
-fun RouteGraph.Builder.route(
-    path: String,
-    params: List<RouteParam> = emptyList(),
-    enterTransitionSpec: RouteEnterTransition? = null,
-    exitTransitionSpec: RouteExitTransition? = null,
-    content: @Composable () -> Unit,
+/**
+ * Create a type safe route and added to the graph.
+ */
+inline fun <reified T> RouteGraph.Builder.route(
+    noinline enterTransitionSpec: RouteEnterTransition = enterAnim,
+    noinline exitTransitionSpec: RouteExitTransition = exitAnim,
+    crossinline content: @Composable () -> Unit,
 ) {
     addRoute(
-        Route(
-            path = path,
-            params = params,
+        TypedRoute(
+            T::class,
             content = {
               Box(modifier = Modifier.fillMaxSize()) {
                   content()
               }
             },
-            enterTransitionSpec = enterTransitionSpec ?: enterAnim,
-            exitTransitionSpec = exitTransitionSpec ?: exitAnim
+            enterTransitionSpec = enterTransitionSpec,
+            exitTransitionSpec = exitTransitionSpec
+        )
+    )
+}
+
+/**
+ * Create a path route and added to the graph.
+ */
+inline fun RouteGraph.Builder.route(
+    path: String,
+    params: List<RouteParam> = emptyList(),
+    noinline enterTransitionSpec: RouteEnterTransition = enterAnim,
+    noinline exitTransitionSpec: RouteExitTransition = exitAnim,
+    crossinline content: @Composable () -> Unit,
+) {
+    addRoute(
+        PathRoute(
+            path = path,
+            params = params,
+            content = {
+                Box(modifier = Modifier.fillMaxSize()) {
+                    content()
+                }
+            },
+            enterTransitionSpec = enterTransitionSpec,
+            exitTransitionSpec = exitTransitionSpec,
         )
     )
 }

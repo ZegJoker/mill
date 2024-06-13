@@ -1,3 +1,6 @@
 package coder.stanley.mill.router
 
-expect fun uuid(): String
+/**
+ * Generate a UUID v4 string.
+ */
+internal expect fun uuid(): String

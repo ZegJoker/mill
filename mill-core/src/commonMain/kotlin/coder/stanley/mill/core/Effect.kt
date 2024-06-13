@@ -9,8 +9,9 @@ sealed class Effect<Action, Event> {
 
         fun <Action, Event> task(
             id: String,
+            cancellable: Boolean = true,
             execute: suspend (send: (Action) -> Unit) -> Unit
-        ): Effect<Action, Event> = Task(id, execute)
+        ): Effect<Action, Event> = Task(id, cancellable, execute)
 
         fun <Action, Event> cancel(id: String): Effect<Action, Event> = CancelTask(id)
     }
@@ -19,6 +20,7 @@ sealed class Effect<Action, Event> {
 
     internal class Task<Action, Event>(
         val id: String,
+        val cancellable: Boolean,
         val execute: suspend (send: (Action) -> Unit) -> Unit
     ) : Effect<Action, Event>()
 

@@ -3,6 +3,9 @@ package coder.stanley.mill.core.reducer
 import coder.stanley.mill.core.Effect
 import coder.stanley.mill.core.Reducer
 
+/**
+ * A convenient function to create an anonymous [Reducer].
+ */
 fun <Action, State, Event> createReducer(
     block: (
         action: Action,
@@ -21,6 +24,9 @@ fun <Action, State, Event> createReducer(
     }
 }
 
+/**
+ * A function that can be used to convert a outside [Reducer] to a inner [Reducer].
+ */
 fun <Action, InnerAction, Event, InnerEvent, State, InnerState> createScopedReducer(
     toInnerAction: (Action) -> InnerAction?,
     fromInnerAction: (InnerAction) -> Action,

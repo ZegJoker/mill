@@ -110,7 +110,7 @@ Column(
 Mill has a built-in navigation component named `router`, it is pretty much the same as android's navigation compose. To use it:
 1. Create a route controller
 ```kotlin
-val controller = rememberRouteControler
+val controller = rememberRouteControler()
 ```
 2. Create the route graph with `RouteHost`
 ```kotlin

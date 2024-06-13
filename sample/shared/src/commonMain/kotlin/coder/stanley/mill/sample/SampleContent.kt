@@ -23,10 +23,13 @@ import coder.stanley.mill.router.LocalRouteContext
 import coder.stanley.mill.router.RouteHost
 import coder.stanley.mill.router.RouteParam
 import coder.stanley.mill.router.RouteParamType
-import coder.stanley.mill.router.getIntParam
-import coder.stanley.mill.router.navigateTo
+import coder.stanley.mill.router.getRouteParam
 import coder.stanley.mill.router.rememberRouteController
 import coder.stanley.mill.router.route
+import coder.stanley.mill.router.getRouteTarget
+import kotlinx.coroutines.delay
+import kotlinx.coroutines.isActive
+import kotlin.coroutines.coroutineContext
 
 @Composable
 fun SampleContent(modifier: Modifier = Modifier) {
@@ -35,7 +38,7 @@ fun SampleContent(modifier: Modifier = Modifier) {
     RouteHost(
         controller = controller,
         modifier = modifier.fillMaxSize(),
-        startRoute = "first",
+        startRoute = First,
         enterTransitionSpec = {
             slideIntoContainer(towards = AnimatedContentTransitionScope.SlideDirection.Start)
         },
@@ -43,7 +46,7 @@ fun SampleContent(modifier: Modifier = Modifier) {
             slideOutOfContainer(towards = AnimatedContentTransitionScope.SlideDirection.End)
         }
     ) {
-        route("first") {
+        route<First> {
             FirstPage {
                 controller.navigateTo("second/$it")
             }
@@ -54,33 +57,56 @@ fun SampleContent(modifier: Modifier = Modifier) {
             params = listOf(
                 RouteParam("data", type = RouteParamType.Int)
             )
-        ) {
-            SecondPage{
-                controller.navigateTo("third/$it")
+        )  {
+            SecondPage {
+                controller.navigateTo(Third(it))
             }
         }
 
-        route(
-            path = "third/{data}",
-            params = listOf(
-                RouteParam("data", type = RouteParamType.Int)
-            )
-        ) {
+        route<Third> {
             ThirdPage()
         }
     }
 }
+
+interface NumberPage {
+    val data: Int
+}
+
+object First : NumberPage {
+    override val data: Int = 0
+}
+
+data class Third(override val data: Int) : NumberPage
 
 @Composable
 fun Title(text: String) {
     Text(text, style = MaterialTheme.typography.titleMedium)
 }
 
-class CounterFeature: Feature<Unit, Int, Unit>() {
-    override fun FeatureBuilder<Unit, Int, Unit>.buildFeature() {
-        Reducer { _, set, _ ->
-            set { it + 1 }
-            Effect.none()
+sealed class CounterAction {
+    data object Add : CounterAction()
+
+    data object Tick: CounterAction()
+}
+
+class CounterFeature : Feature<CounterAction, Int, Unit>() {
+    override fun FeatureBuilder<CounterAction, Int, Unit>.buildFeature() {
+        Reducer { action, set, _ ->
+            when (action) {
+                is CounterAction.Add -> {
+                    set { it + 1 }
+                    Effect.none()
+                }
+                is CounterAction.Tick -> {
+                    Effect.task("tick-tick") { send ->
+                        while(coroutineContext.isActive) {
+                            delay(1000)
+                            send(CounterAction.Add)
+                        }
+                    }
+                }
+            }
         }
     }
 }
@@ -89,6 +115,8 @@ class CounterFeature: Feature<Unit, Int, Unit>() {
 fun GeneralPage(
     modifier: Modifier,
     pageName: String,
+    initialNumber: Int,
+    id: String,
     nextPageName: String? = null,
     onNavToNextPage: ((Int) -> Unit)? = null
 ) {
@@ -96,13 +124,10 @@ fun GeneralPage(
         CounterFeature()
     }
 
-    val currentRoute = LocalRouteContext.current
-    val param = currentRoute.getIntParam("data") ?: 0
-
     val store = rememberStore(
-        name = "store: ${currentRoute.id}",
+        name = "store: $id",
         counterFeature
-    ) { param }
+    ) { initialNumber }
 
     val state by store.state.collectAsState()
 
@@ -116,10 +141,19 @@ fun GeneralPage(
         Text("Count: $state")
         Spacer(modifier = Modifier.height(8.dp))
         Button(onClick = {
-            store.dispatch(Unit)
+            store.dispatch(CounterAction.Add)
         }) {
             Text("  + 1  ")
         }
+
+        Spacer(modifier = Modifier.height(8.dp))
+
+        Button(onClick = {
+            store.dispatch(CounterAction.Tick)
+        }) {
+            Text("  Tick  ")
+        }
+
         Spacer(modifier = Modifier.height(8.dp))
         if (nextPageName != null && onNavToNextPage != null) {
             Button(onClick = {
@@ -133,7 +167,16 @@ fun GeneralPage(
 
 @Composable
 fun FirstPage(modifier: Modifier = Modifier, navToSecond: (Int) -> Unit) {
-    GeneralPage(modifier, pageName = "1st", nextPageName = "2nd", onNavToNextPage = navToSecond)
+
+    val context = LocalRouteContext.current
+    GeneralPage(
+        modifier,
+        pageName = "1st",
+        initialNumber = 0,
+        id = context.id,
+        nextPageName = "2nd",
+        onNavToNextPage = navToSecond
+    )
 }
 
 @Composable
@@ -141,14 +184,25 @@ fun SecondPage(
     modifier: Modifier = Modifier,
     onNavTo3rd: ((Int) -> Unit)?
 ) {
-    GeneralPage(modifier, pageName = "2nd", nextPageName = "3rd", onNavToNextPage = onNavTo3rd)
+    val context = LocalRouteContext.current
+    val param = getRouteParam<Int>("data")
+    GeneralPage(
+        modifier,
+        pageName = "2nd",
+        initialNumber = param,
+        id = context.id,
+        nextPageName = "3rd",
+        onNavToNextPage = onNavTo3rd
+    )
 }
 
 @Composable
 fun ThirdPage(
     modifier: Modifier = Modifier,
 ) {
-    GeneralPage(modifier, pageName = "3rd")
+    val context = LocalRouteContext.current
+    val param = getRouteTarget<Third>().data
+    GeneralPage(modifier, initialNumber = param, id = context.id, pageName = "3rd")
 }
 
 

@@ -1,6 +1,6 @@
 package coder.stanley.mill.router
 
-actual fun uuid(): String {
+internal actual fun uuid(): String {
     return Uuid.v4()
 }
 
