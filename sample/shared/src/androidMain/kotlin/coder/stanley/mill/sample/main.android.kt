@@ -7,13 +7,13 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.CompositionLocalProvider
 import androidx.compose.ui.Modifier
 import androidx.lifecycle.ViewModelStore
-import coder.stanley.mill.core.LocalViewStateStoreSaver
-import coder.stanley.mill.core.ViewStateStoreSaver
+import coder.stanley.mill.core.LocalStateStoreSaver
+import coder.stanley.mill.core.StateStoreSaver
 
 @Composable
 fun MainView(viewModelStore: ViewModelStore) {
     CompositionLocalProvider(
-        LocalViewStateStoreSaver provides ViewStateStoreSaver(viewModelStore)
+        LocalStateStoreSaver provides StateStoreSaver(viewModelStore)
     ) {
         MaterialTheme {
             Surface(modifier = Modifier.fillMaxSize()) {

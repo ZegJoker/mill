@@ -14,7 +14,7 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 
 @Composable
-actual fun BackHost(content: @Composable () -> Unit) {
+internal actual fun BackHost(content: @Composable () -> Unit) {
     var delta = 0f
     var backStart = false
     var attemptToBack by remember { mutableStateOf(false) }

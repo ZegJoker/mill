@@ -4,23 +4,23 @@ import android.annotation.SuppressLint
 import androidx.compose.runtime.compositionLocalOf
 import androidx.lifecycle.ViewModelStore
 
-actual class ViewStateStoreSaver(private val viewModelStore: ViewModelStore = ViewModelStore()) {
+actual class StateStoreSaver(private val viewModelStore: ViewModelStore = ViewModelStore()) {
 
     actual constructor() : this(ViewModelStore())
 
     @SuppressLint("RestrictedApi", "UNCHECKED_CAST")
     @Suppress("UNCHECKED_CAST")
-    actual fun <Action, State, Effect> getStore(key: String): ViewStateStore<Action, State, Effect>? {
+    actual fun <Action, State, Event> getStore(key: String): StateStore<Action, State, Event>? {
         val store = viewModelStore[key]
         if (store != null) {
-            return store as ViewStateStore<Action, State, Effect>
+            return store as StateStore<Action, State, Event>
         }
         return null
     }
 
     @SuppressLint("RestrictedApi")
-    actual fun putStore(key: String, viewStateStore: ViewStateStore<*, *, *>) {
-        viewModelStore.put(key, viewStateStore)
+    actual fun putStore(key: String, stateStore: StateStore<*, *, *>) {
+        viewModelStore.put(key, stateStore)
     }
 
     @SuppressLint("RestrictedApi")
@@ -33,6 +33,6 @@ actual class ViewStateStoreSaver(private val viewModelStore: ViewModelStore = Vi
     }
 }
 
-actual val LocalViewStateStoreSaver = compositionLocalOf {
-    ViewStateStoreSaver()
+actual val LocalStateStoreSaver = compositionLocalOf {
+    StateStoreSaver()
 }

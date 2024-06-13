@@ -1,20 +1,74 @@
 package coder.stanley.mill.core.reducer
 
-import coder.stanley.mill.core.NamedReducer
+import coder.stanley.mill.core.Effect
+import coder.stanley.mill.core.Reducer
 
-fun <Action, State, Effect> createReducer(
-    name: String,
-    block: suspend (action: Action, currentState: State, onEffect: (Effect) -> Unit) -> State,
-): NamedReducer<Action, State, Effect> {
-    return object : NamedReducer<Action, State, Effect> {
-        override val name: String = name
-
-        override suspend fun reduce(
+/**
+ * A convenient function to create an anonymous [Reducer].
+ */
+fun <Action, State, Event> createReducer(
+    block: (
+        action: Action,
+        set: ((current: State) -> State) -> Unit,
+        get: () -> State
+    ) -> Effect<Action, Event>,
+): Reducer<Action, State, Event> {
+    return object : Reducer<Action, State, Event> {
+        override fun reduce(
             action: Action,
-            currentState: State,
-            onEffect: (Effect) -> Unit
-        ): State {
-            return block(action, currentState, onEffect)
+            set: ((current: State) -> State) -> Unit,
+            get: () -> State
+        ): Effect<Action, Event> {
+            return block(action, set, get)
+        }
+    }
+}
+
+/**
+ * A function that can be used to convert a outside [Reducer] to a inner [Reducer].
+ */
+fun <Action, InnerAction, Event, InnerEvent, State, InnerState> createScopedReducer(
+    toInnerAction: (Action) -> InnerAction?,
+    fromInnerAction: (InnerAction) -> Action,
+    toInnerState: (State) -> InnerState,
+    fromInnerState: (State, InnerState) -> State,
+    fromInnerEvent: (InnerEvent) -> Event,
+    reducerBuilder: () -> Reducer<InnerAction, InnerState, InnerEvent>
+): Reducer<Action, State, Event> {
+    return object: Reducer<Action, State, Event> {
+        val innerReducer by lazy { reducerBuilder() }
+        override fun reduce(
+            action: Action,
+            set: ((current: State) -> State) -> Unit,
+            get: () -> State
+        ): Effect<Action, Event> {
+            val innerAction = toInnerAction(action) ?: return Effect.none()
+            val innerEffect = innerReducer.reduce(
+                innerAction,
+                set = { newInnerState ->
+                    set { state ->
+                        fromInnerState(
+                            state,
+                            newInnerState(toInnerState(state))
+                        )
+                    }
+                },
+                get = { toInnerState(get()) }
+            )
+            return mapEffect(innerEffect)
+        }
+
+        private fun mapEffect(innerEffect: Effect<InnerAction, InnerEvent>): Effect<Action, Event> {
+            return when (innerEffect) {
+                is Effect.None -> Effect.none()
+                is Effect.EventEmitter -> Effect.event(fromInnerEvent(innerEffect.event))
+                is Effect.Task -> Effect.task(innerEffect.id) { send ->
+                    innerEffect.execute { send(fromInnerAction(it)) }
+                }
+
+                is Effect.CancelTask -> Effect.cancel(innerEffect.id)
+                is Effect.ListEffect -> Effect.ListEffect(innerEffect.effects.map(::mapEffect))
+            }
         }
     }
 }

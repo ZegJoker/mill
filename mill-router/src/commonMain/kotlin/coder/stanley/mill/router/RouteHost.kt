@@ -13,41 +13,61 @@ import androidx.compose.runtime.CompositionLocalProvider
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.remember
 import androidx.compose.runtime.saveable.LocalSaveableStateRegistry
 import androidx.compose.runtime.saveable.rememberSaveableStateHolder
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import coder.stanley.mill.core.LocalViewStateStoreSaver
+import coder.stanley.mill.core.LocalStateStoreSaver
 
+/**
+ * Provides in place in the Compose hierarchy for self contained navigation to occur.
+ *
+ * Once this is called, any Composable within the given [RouteGraph.Builder] can be navigated to from
+ * the provided [controller].
+ *
+ * The builder passed into this method is [remember]ed. This means that for this NavHost, the
+ * contents of the builder cannot be changed.
+ *
+ * @param controller the navController for this host
+ * @param startRoute the route for the start destination
+ * @param modifier The modifier to be applied to the layout.
+ * @param contentAlignment The [Alignment] of the [AnimatedContent]
+ * @param enterTransitionSpec callback to define enter transitions for destination in this host
+ * @param exitTransitionSpec callback to define exit transitions for destination in this host
+ * @param routes the builder used to construct the graph
+ */
 @Composable
 fun RouteHost(
     modifier: Modifier = Modifier,
     contentAlignment: Alignment = Alignment.Center,
     controller: RouteController,
-    startRoute: String,
+    startRoute: Any,
     enterTransitionSpec: RouteEnterTransition = { fadeIn(animationSpec = tween(350)) },
     exitTransitionSpec: RouteExitTransition = { fadeOut(animationSpec = tween(350)) },
     routes: RouteGraph.Builder.() -> Unit,
 ) {
-    val graph = RouteGraph.Builder()
-        .setEnterAnim(enterTransitionSpec)
-        .setExitAnim(exitTransitionSpec)
-        .apply(routes)
-        .build()
-    val state by controller.state.collectAsState()
+    val graph = remember(startRoute, routes) {
+        RouteGraph.Builder()
+            .setEnterAnim(enterTransitionSpec)
+            .setExitAnim(exitTransitionSpec)
+            .apply(routes)
+            .build()
+    }
+    val state by controller.innerController.state.collectAsState()
 
-    LaunchedEffect(controller) {
-        controller.dispatch(RouteAction.SetGraph(graph, startPath = startRoute))
+    LaunchedEffect(controller, graph) {
+        controller.innerController.dispatch(RouteAction.SetGraph(graph, start = startRoute))
     }
 
     val saveableStateHolder = rememberSaveableStateHolder()
 
     BackHost {
-        BackHandler(isEnabled = state.prevContext != null) {
+        BackHandler(isEnabled = state.currentRoute.prevContext != null) {
             controller.navigateUp()
         }
 
-        val transition = updateTransition(state, label = "route")
+        val transition = updateTransition(state.currentRoute, label = "route")
 
         transition.AnimatedContent(
             modifier = modifier,
@@ -71,11 +91,21 @@ fun RouteHost(
         ) {
             CompositionLocalProvider(
                 LocalRouteContext.provides(it),
-                LocalViewStateStoreSaver provides it.viewModelSaver,
+                LocalStateStoreSaver provides it.viewModelSaver,
                 LocalSaveableStateRegistry provides it.saveableStateRegistry
             ) {
                 for (route in graph.routes) {
-                    if (route.path == it.path) {
+                    if (
+                        route is TypedRoute
+                        && it is TypedRouteContext
+                        && route.targetClass == it.target::class
+                    ) {
+                        saveableStateHolder.SaveableStateProvider(it.id, route.content)
+                    } else if (
+                        route is PathRoute
+                        && it is PathRouteContext
+                        && route.path == it.path
+                    ) {
                         saveableStateHolder.SaveableStateProvider(it.id, route.content)
                     }
                 }

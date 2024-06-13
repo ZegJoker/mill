@@ -1,16 +1,15 @@
 [versions]
 
 # Mill
-mill = "0.0.5"
+mill = "0.1.0"
 
 agp = "8.2.2"
-kotlin = "1.9.23"
-kotlinxCoroutines = "1.8.0"
+kotlin = "2.0.0"
+kotlinxCoroutines = "1.8.1"
 kotlinx-atomicfu = "0.21.0"
-androidx-activityCompose = "1.9.0"
-androidx-compose-compiler = "1.5.12"
 
-jetbrainsCompose = "1.6.2"
+androidx-activityCompose = "1.9.0"
+jetbrainsCompose = "1.6.10"
 androidDesugarJdkLibs = "2.0.4"
 
 npm-uuid = "9.0.0"
@@ -47,3 +46,4 @@ androidLibrary = { id = "com.android.library", version.ref = "agp" }
 kotlinAndroid = { id = "org.jetbrains.kotlin.android", version.ref = "kotlin" }
 kotlinMultiplatform = { id = "org.jetbrains.kotlin.multiplatform", version.ref = "kotlin" }
 composeMultiplatform = { id = "org.jetbrains.compose", version.ref = "jetbrainsCompose" }
+compose-compiler = { id = "org.jetbrains.kotlin.plugin.compose", version.ref = "kotlin" }

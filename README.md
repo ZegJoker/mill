@@ -63,8 +63,7 @@ CompositionLocalProvider(LocalViewStateStoreSaver.provides(ViewStateStoreSaver()
 2. Create the reducer by implements the interface or call the convenience function:
    1. Implement interface
    ``` kotlin
-   class CounterReducer: NamedReducer<Unit, Int, Unit> {
-       override val name: String = "CounterReducer"
+   class CounterReducer: Reducer<Unit, Int, Unit> {
        override suspend fun reduce(action: Unit, currentState: Int, onEffect: (Unit) -> Unit) {
            return currentState + 1
        }
@@ -72,17 +71,18 @@ CompositionLocalProvider(LocalViewStateStoreSaver.provides(ViewStateStoreSaver()
    ```
    2. Create from the convenience function
    ```kotlin
-   val counterReducer = createReducer("counter-reducer") {_, current, _ ->
+   val counterReducer = createReducer {_, current, _ ->
        current + 1
    }
    ```
-3. Create a `ViewStateStore` by using `rememberStore` function, it will need you to pass 2/3 params:
+3. Create a `ViewStateStore` by using `rememberStore` function, it will need you to pass 3 params:
+- Name
 - Reducer
-- Name(Optional)
 - function to initiate the state
 ```kotlin
 val store = rememberStore(
-    counterReducer,
+   name = "counter-store",
+   counterReducer,
 ) { 0 }
 ```
 4. Subscribe the state in UI composable
@@ -110,7 +110,7 @@ Column(
 Mill has a built-in navigation component named `router`, it is pretty much the same as android's navigation compose. To use it:
 1. Create a route controller
 ```kotlin
-val controller = rememberRouteControler
+val controller = rememberRouteControler()
 ```
 2. Create the route graph with `RouteHost`
 ```kotlin
